@@ -168,14 +168,6 @@
         {
           "name": "sqrtPriceLimit",
           "type": "u128"
-        },
-        {
-          "name": "amountSpecifiedIsInput",
-          "type": "bool"
-        },
-        {
-          "name": "aToB",
-          "type": "bool"
         }
       ]
     }
@@ -233,6 +225,11 @@
       "code": 6001,
       "name": "SigFailed",
       "msg": "Sig Failed"
+    },
+    {
+      "code": 6002,
+      "name": "InternalError",
+      "msg": "Internal Error"
     }
   ]
 }

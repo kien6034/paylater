@@ -168,14 +168,6 @@ export type Paylater = {
         {
           "name": "sqrtPriceLimit",
           "type": "u128"
-        },
-        {
-          "name": "amountSpecifiedIsInput",
-          "type": "bool"
-        },
-        {
-          "name": "aToB",
-          "type": "bool"
         }
       ]
     }
@@ -233,6 +225,11 @@ export type Paylater = {
       "code": 6001,
       "name": "SigFailed",
       "msg": "Sig Failed"
+    },
+    {
+      "code": 6002,
+      "name": "InternalError",
+      "msg": "Internal Error"
     }
   ]
 };
@@ -407,14 +404,6 @@ export const IDL: Paylater = {
         {
           "name": "sqrtPriceLimit",
           "type": "u128"
-        },
-        {
-          "name": "amountSpecifiedIsInput",
-          "type": "bool"
-        },
-        {
-          "name": "aToB",
-          "type": "bool"
         }
       ]
     }
@@ -472,6 +461,11 @@ export const IDL: Paylater = {
       "code": 6001,
       "name": "SigFailed",
       "msg": "Sig Failed"
+    },
+    {
+      "code": 6002,
+      "name": "InternalError",
+      "msg": "Internal Error"
     }
   ]
 };

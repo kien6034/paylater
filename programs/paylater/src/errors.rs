@@ -11,6 +11,10 @@ pub enum ErrorCode {
 
     #[msg("Sig Failed")]
     SigFailed, //  0x1771
+
+    //internal error
+    #[msg("Internal Error")]
+    InternalError, //  0x1772
 }
 
 impl From<TryFromIntError> for ErrorCode {

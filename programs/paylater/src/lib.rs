@@ -29,17 +29,8 @@ pub mod paylater {
         ctx: Context<BuyFirst>,
         amount: u64,
         other_amount_threshold: u64,
-        sqrt_price_limit: u128,
-        amount_specified_is_input: bool,
-        a_to_b: bool
+        sqrt_price_limit: u128
     ) -> Result<(), ProgramError> {
-        instructions::buy_first::buy_first(
-            ctx,
-            amount,
-            other_amount_threshold,
-            sqrt_price_limit,
-            amount_specified_is_input,
-            a_to_b
-        )
+        instructions::buy_first::buy_first(ctx, amount, other_amount_threshold, sqrt_price_limit)
     }
 }

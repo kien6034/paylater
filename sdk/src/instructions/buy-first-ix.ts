@@ -56,13 +56,7 @@ export async function buyFirst(
   console.log("--------------------");
 
   const ix = await program.methods
-    .buyFirst(
-      params.amount,
-      params.otherAmountThreshold,
-      params.sqrtPriceLimit,
-      params.amountSpecifiedIsInput,
-      params.aToB
-    )
+    .buyFirst(params.amount, params.otherAmountThreshold, params.sqrtPriceLimit)
     .accounts({
       user: params.user,
       market: params.market,
