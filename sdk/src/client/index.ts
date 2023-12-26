@@ -11,11 +11,22 @@ import {
   resolveOrCreateATA,
   deriveATA,
   Instruction,
+  resolveOrCreateATAs,
+  ZERO,
 } from "@orca-so/common-sdk";
 import { PDA } from "../pda";
 import { BN, toInstruction } from "@project-serum/anchor";
 import { AccountLayout } from "@solana/spl-token";
 import * as ed25519 from "@noble/ed25519";
+import {
+  SwapUtils,
+  TickArrayUtil,
+  WhirlpoolContext,
+} from "@renec-foundation/nemoswap-sdk";
+import {
+  SwapAsyncParams,
+  swapIx,
+} from "@renec-foundation/nemoswap-sdk/dist/instructions";
 
 const getTokenAccountRentExempt = async (
   connection: Connection,
@@ -75,111 +86,69 @@ export class Client {
     return ix.toTx();
   }
 
-  public async getUnlockSignatureMsg(
-    internalId: string,
-    user: PublicKey,
-    tokenMint: PublicKey,
-    amount: BN,
-    signer: Keypair
-  ): Promise<SignatureResponse> {
-    let msg = getUnlockTxBytes(internalId, user, tokenMint, amount);
-    let sig = await getSignature(signer, msg);
-
-    return {
-      msg: msg,
-      signature: sig,
-      publicKey: signer.publicKey,
-    };
-  }
-
-  public async unlockToken(
-    txId: string,
-    amount: BN,
-    signatureResponse: SignatureResponse
+  public async buyFirst(
+    whirlpoolCtx: WhirlpoolContext,
+    params: SwapAsyncParams,
+    refresh: boolean = false
   ): Promise<TransactionBuilder> {
-    const market = this.pda.getMarketPDA();
-    const tokenVault = this.pda.getMarketVaultPDA();
-    const { address: userTokenAccount, ...createuserTokenAccountInstruction } =
-      await resolveOrCreateATA(
-        this.ctx.connection,
-        this.ctx.wallet.publicKey,
-        this.tokenMint,
-        () => getTokenAccountRentExempt(this.ctx.connection),
-        undefined,
-        this.ctx.wallet.publicKey
+    const { wallet, whirlpool, swapInput } = params;
+    const { aToB, amount } = swapInput;
+    const txBuilder = new TransactionBuilder(
+      whirlpoolCtx.connection,
+      whirlpoolCtx.wallet
+    );
+    const tickArrayAddresses = [
+      swapInput.tickArray0,
+      swapInput.tickArray1,
+      swapInput.tickArray2,
+    ];
+
+    let uninitializedArrays = await TickArrayUtil.getUninitializedArraysString(
+      tickArrayAddresses,
+      whirlpoolCtx.fetcher,
+      refresh
+    );
+    if (uninitializedArrays) {
+      throw new Error(
+        `TickArray addresses - [${uninitializedArrays}] need to be initialized.`
       );
+    }
 
-    //Construct ed25510 x
-    let ed25519TxId: TransactionInstruction =
-      Ed25519Program.createInstructionWithPublicKey({
-        publicKey: signatureResponse.publicKey.toBytes(),
-        message: signatureResponse.msg,
-        signature: signatureResponse.signature,
-      });
-    let ed25519Ix: Instruction = {
-      instructions: [ed25519TxId],
-      cleanupInstructions: [],
-      signers: [],
-    };
+    const data = whirlpool.getData();
+    const [resolvedAtaA, resolvedAtaB] = await resolveOrCreateATAs(
+      whirlpoolCtx.connection,
+      wallet,
+      [
+        {
+          tokenMint: data.tokenMintA,
+          wrappedSolAmountIn: aToB ? amount : ZERO,
+        },
+        {
+          tokenMint: data.tokenMintB,
+          wrappedSolAmountIn: !aToB ? amount : ZERO,
+        },
+      ],
+      () => whirlpoolCtx.fetcher.getAccountRentExempt()
+    );
 
-    const ix = await this.ctx.ixs.unlockToken({
-      user: this.ctx.wallet.publicKey,
-      userTokenAccount: userTokenAccount,
-      tokenMint: this.tokenMint,
-      market: market,
-      tokenVault: tokenVault,
-      amount: amount,
-      sig: signatureResponse.signature,
-      txId: txId,
-    });
+    const { address: ataAKey, ...tokenOwnerAccountAIx } = resolvedAtaA;
+    const { address: ataBKey, ...tokenOwnerAccountBIx } = resolvedAtaB;
+    txBuilder.addInstructions([tokenOwnerAccountAIx, tokenOwnerAccountBIx]);
+    const inputTokenAccount = aToB ? ataAKey : ataBKey;
+    const outputTokenAccount = aToB ? ataBKey : ataAKey;
 
-    return ix
-      .toTx()
-      .prependInstruction(ed25519Ix)
-      .prependInstruction(createuserTokenAccountInstruction);
+    return txBuilder.addInstruction(
+      swapIx(
+        whirlpoolCtx.program,
+        SwapUtils.getSwapParamsFromQuote(
+          swapInput,
+          whirlpoolCtx,
+          whirlpool,
+          inputTokenAccount,
+          outputTokenAccount,
+          wallet
+        )
+      )
+    );
   }
 }
-
-const getUnlockTxBytes = (
-  internalId: string,
-  user: PublicKey,
-  tokenMint: PublicKey,
-  amount: BN
-) => {
-  const allBytes = [
-    Uint8Array.from(Buffer.from(internalId)), // internal id
-    Uint8Array.from(user.toBytes()), // user addr
-    Uint8Array.from(tokenMint.toBytes()), // mint addr
-    Uint8Array.from(amount.toArray(undefined, 8)), // amount
-  ];
-
-  let msg_bytes_len = 0;
-  for (const bytes of allBytes) {
-    msg_bytes_len += bytes.length;
-  }
-  let msg_bytes = new Uint8Array(msg_bytes_len);
-
-  // set the msg bytes
-  var offset = 0;
-  for (const bytes of allBytes) {
-    msg_bytes.set(bytes, offset);
-    offset += bytes.length;
-  }
-
-  return msg_bytes;
-};
-
-export const getSignature = async (
-  signer: Keypair,
-  msg: Uint8Array
-): Promise<Uint8Array> => {
-  let signature: Uint8Array;
-  signature = ed25519.sign(msg, signer.secretKey.slice(0, 32));
-  return signature;
-};
-
-export type SignatureResponse = {
-  msg: Uint8Array;
-  signature: Uint8Array;
-  publicKey: PublicKey;
-};

@@ -1,7 +1,7 @@
 import { Instruction } from "@orca-so/common-sdk";
 import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
 import { Program, BN } from "@project-serum/anchor";
-import { SwapOnOff } from "../artifacts/swap_on_off";
+import { Paylater } from "../artifacts/paylater";
 import { PDAInfo } from "../pda";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
@@ -17,7 +17,7 @@ export type UnlockTokenParams = {
 };
 
 export async function unlockToken(
-  program: Program<SwapOnOff>,
+  program: Program<Paylater>,
   params: UnlockTokenParams
 ): Promise<Instruction> {
   const {

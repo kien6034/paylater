@@ -1,0 +1,66 @@
+import { Instruction } from "@orca-so/common-sdk";
+import { PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
+import { Program, BN } from "@project-serum/anchor";
+import { Paylater } from "../artifacts/paylater";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { u64 } from "@solana/spl-token";
+
+export type BuyFirst = {
+  amount: u64;
+  otherAmountThreshold: u64;
+  sqrtPriceLimit: BN;
+  amountSpecifiedIsInput: boolean;
+  aToB: boolean;
+
+  user: PublicKey;
+  userTokenAccount: PublicKey;
+  whirlpoolProgram: PublicKey;
+  whirlpool: PublicKey;
+  tokenOwnerAccountA: PublicKey;
+  tokenOwnerAccountB: PublicKey;
+  tokenVaultA: PublicKey;
+  tokenVaultB: PublicKey;
+  oracle: PublicKey;
+  tokenAuthority: PublicKey;
+  tickArray0: PublicKey;
+  tickArray1: PublicKey;
+  tickArray2: PublicKey;
+};
+
+export async function buyFirst(
+  program: Program<Paylater>,
+  params: BuyFirst
+): Promise<Instruction> {
+  const ix = await program.methods
+    .buyFirst(
+      params.amount,
+      params.otherAmountThreshold,
+      params.sqrtPriceLimit,
+      params.amountSpecifiedIsInput,
+      params.aToB
+    )
+    .accounts({
+      user: params.user,
+      userTokenAccount: params.userTokenAccount,
+      whirlpoolProgram: params.whirlpoolProgram,
+      whirlpool: params.whirlpool,
+      tokenOwnerAccountA: params.tokenOwnerAccountA,
+      tokenOwnerAccountB: params.tokenOwnerAccountB,
+      tokenVaultA: params.tokenVaultA,
+      tokenVaultB: params.tokenVaultB,
+      oracle: params.oracle,
+      tickArray0: params.tickArray0,
+      tickArray1: params.tickArray1,
+      tickArray2: params.tickArray2,
+      tokenProgram: TOKEN_PROGRAM_ID,
+      systemProgram: SystemProgram.programId,
+      rent: SYSVAR_RENT_PUBKEY,
+    })
+    .instruction();
+
+  return {
+    instructions: [ix],
+    cleanupInstructions: [],
+    signers: [],
+  };
+}
