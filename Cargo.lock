@@ -2400,7 +2400,7 @@ dependencies = [
 [[package]]
 name = "whirlpool"
 version = "0.1.0"
-source = "git+https://github.com/renec-chain/nemo-swap/?tag=v1.0#b12d629222690e6a0f9bfaba7dec728bf439ca71"
+source = "git+https://github.com/renec-chain/nemo-swap/?rev=1e0a20be73aee0a8d204f991a2dddef2a954236b#1e0a20be73aee0a8d204f991a2dddef2a954236b"
 dependencies = [
  "anchor-lang",
  "anchor-spl",

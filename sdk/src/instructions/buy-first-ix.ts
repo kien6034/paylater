@@ -31,6 +31,23 @@ export async function buyFirst(
   program: Program<Paylater>,
   params: BuyFirst
 ): Promise<Instruction> {
+  // log all the accounts, under base 58 with notes
+  console.log("--------------------");
+  console.log("user: ", params.user.toBase58());
+  console.log("userTokenAccount: ", params.userTokenAccount.toBase58());
+  console.log("whirlpoolProgram: ", params.whirlpoolProgram.toBase58());
+  console.log("whirlpool: ", params.whirlpool.toBase58());
+  console.log("tokenOwnerAccountA: ", params.tokenOwnerAccountA.toBase58());
+  console.log("tokenOwnerAccountB: ", params.tokenOwnerAccountB.toBase58());
+  console.log("tokenVaultA: ", params.tokenVaultA.toBase58());
+  console.log("tokenVaultB: ", params.tokenVaultB.toBase58());
+  console.log("oracle: ", params.oracle.toBase58());
+  console.log("tokenAuthority: ", params.tokenAuthority.toBase58());
+  console.log("tickArray0: ", params.tickArray0.toBase58());
+  console.log("tickArray1: ", params.tickArray1.toBase58());
+  console.log("tickArray2: ", params.tickArray2.toBase58());
+  console.log("--------------------");
+
   const ix = await program.methods
     .buyFirst(
       params.amount,
@@ -43,15 +60,15 @@ export async function buyFirst(
       user: params.user,
       userTokenAccount: params.userTokenAccount,
       whirlpoolProgram: params.whirlpoolProgram,
-      whirlpool: params.whirlpool,
-      tokenOwnerAccountA: params.tokenOwnerAccountA,
-      tokenOwnerAccountB: params.tokenOwnerAccountB,
-      tokenVaultA: params.tokenVaultA,
-      tokenVaultB: params.tokenVaultB,
-      oracle: params.oracle,
-      tickArray0: params.tickArray0,
-      tickArray1: params.tickArray1,
-      tickArray2: params.tickArray2,
+      // whirlpool: params.whirlpool,
+      // tokenOwnerAccountA: params.tokenOwnerAccountA,
+      // tokenOwnerAccountB: params.tokenOwnerAccountB,
+      // tokenVaultA: params.tokenVaultA,
+      // tokenVaultB: params.tokenVaultB,
+      // oracle: params.oracle,
+      // tickArray0: params.tickArray0,
+      // tickArray1: params.tickArray1,
+      // tickArray2: params.tickArray2,
       tokenProgram: TOKEN_PROGRAM_ID,
       systemProgram: SystemProgram.programId,
       rent: SYSVAR_RENT_PUBKEY,

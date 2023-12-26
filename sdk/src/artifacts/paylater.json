@@ -192,51 +192,6 @@
           "isSigner": false
         },
         {
-          "name": "whirlpool",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenOwnerAccountA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVaultA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenOwnerAccountB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVaultB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tickArray0",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tickArray1",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tickArray2",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "oracle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "systemProgram",
           "isMut": false,
           "isSigner": false

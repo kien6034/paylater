@@ -22,4 +22,4 @@ thiserror = "1.0"
 mpl-token-metadata = { version = "=1.9.0", features = ["no-entrypoint"] }
 
 
-whirlpool = {git = "https://github.com/renec-chain/nemo-swap/", tag = "v1.0", package = "whirlpool", features=["cpi"]}
+whirlpool = {git = "https://github.com/renec-chain/nemo-swap/", rev = "1e0a20be73aee0a8d204f991a2dddef2a954236b", package = "whirlpool", features=["cpi"]}

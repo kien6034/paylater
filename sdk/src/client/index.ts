@@ -25,6 +25,7 @@ import {
 } from "@renec-foundation/nemoswap-sdk";
 import {
   SwapAsyncParams,
+  SwapInput,
   swapIx,
 } from "@renec-foundation/nemoswap-sdk/dist/instructions";
 
@@ -137,18 +138,36 @@ export class Client {
     const inputTokenAccount = aToB ? ataAKey : ataBKey;
     const outputTokenAccount = aToB ? ataBKey : ataAKey;
 
-    return txBuilder.addInstruction(
-      swapIx(
-        whirlpoolCtx.program,
-        SwapUtils.getSwapParamsFromQuote(
-          swapInput,
-          whirlpoolCtx,
-          whirlpool,
-          inputTokenAccount,
-          outputTokenAccount,
-          wallet
-        )
-      )
+    let swapParams = SwapUtils.getSwapParamsFromQuote(
+      swapInput,
+      whirlpoolCtx,
+      whirlpool,
+      inputTokenAccount,
+      outputTokenAccount,
+      wallet
     );
+
+    let instruction = await this.ctx.ixs.buyFirst({
+      amount: swapInput.amount,
+      otherAmountThreshold: swapInput.otherAmountThreshold,
+      sqrtPriceLimit: swapInput.sqrtPriceLimit,
+      amountSpecifiedIsInput: swapInput.amountSpecifiedIsInput,
+      aToB: swapInput.aToB,
+      user: wallet,
+      userTokenAccount: inputTokenAccount,
+      whirlpoolProgram: whirlpoolCtx.program.programId,
+      whirlpool: whirlpool.getAddress(),
+      tokenOwnerAccountA: swapParams.tokenOwnerAccountA,
+      tokenOwnerAccountB: swapParams.tokenOwnerAccountB,
+      tokenVaultA: swapParams.tokenVaultA,
+      tokenVaultB: swapParams.tokenVaultB,
+      oracle: swapParams.oracle,
+      tokenAuthority: swapParams.tokenAuthority,
+      tickArray0: swapInput.tickArray0,
+      tickArray1: swapInput.tickArray1,
+      tickArray2: swapInput.tickArray2,
+    });
+
+    return instruction.toTx();
   }
 }
