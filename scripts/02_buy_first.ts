@@ -4,6 +4,7 @@ import {
   PDAUtil,
   buildWhirlpoolClient,
   swapQuoteByInputToken,
+  swapQuoteByOutputToken,
 } from "@renec-foundation/nemoswap-sdk";
 import { getPoolInfo } from "./nemo/utils/pool";
 import { u64 } from "@solana/spl-token";
@@ -55,7 +56,7 @@ async function main() {
   const whirlpool = await nemoClient.getPool(whirlpoolPda.publicKey);
   const whirlpoolData = whirlpool.getData();
 
-  const quote = await swapQuoteByInputToken(
+  const quote = await swapQuoteByOutputToken(
     whirlpool,
     whirlpoolData.tokenMintB,
     new u64(100000),
@@ -65,8 +66,18 @@ async function main() {
     true
   );
 
-  const { ctx: paylaterContext, tokenMint } = await getFixture(userKeypair);
-  const client = new Client(paylaterContext, tokenMint);
+  const {
+    ctx: paylaterContext,
+    marketId,
+    bondTokenMint,
+    accessTokenMint,
+  } = await getFixture(userKeypair);
+  const client = new Client(
+    paylaterContext,
+    marketId,
+    bondTokenMint,
+    accessTokenMint
+  );
 
   const tx = await client.buyFirst(
     whirlpoolContext,

@@ -76,7 +76,17 @@ export type Paylater = {
           "isSigner": true
         },
         {
-          "name": "userTokenAccount",
+          "name": "market",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bondTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -305,7 +315,17 @@ export const IDL: Paylater = {
           "isSigner": true
         },
         {
-          "name": "userTokenAccount",
+          "name": "market",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "bondTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenVault",
           "isMut": true,
           "isSigner": false
         },

@@ -151,7 +151,17 @@ export class Client {
       wallet
     );
 
+    // GET MARKET DATA
+    const marketPDA = this.pda.getMarketPDA();
+    const marketData = await this.getMarket();
+    if (!marketData) {
+      throw new Error("Market data is not found.");
+    }
+
     let instruction = await this.ctx.ixs.buyFirst({
+      market: marketPDA.key,
+      bondTokenVault: marketData.bondTokenVault,
+      accessTokenVault: marketData.accessTokenVault,
       amount: swapInput.amount,
       otherAmountThreshold: swapInput.otherAmountThreshold,
       sqrtPriceLimit: swapInput.sqrtPriceLimit,

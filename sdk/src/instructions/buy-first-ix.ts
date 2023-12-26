@@ -6,6 +6,10 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { u64 } from "@solana/spl-token";
 
 export type BuyFirst = {
+  market: PublicKey;
+  bondTokenVault: PublicKey;
+  accessTokenVault: PublicKey;
+
   amount: u64;
   otherAmountThreshold: u64;
   sqrtPriceLimit: BN;
@@ -46,6 +50,9 @@ export async function buyFirst(
   console.log("tickArray0: ", params.tickArray0.toBase58());
   console.log("tickArray1: ", params.tickArray1.toBase58());
   console.log("tickArray2: ", params.tickArray2.toBase58());
+  console.log("market: ", params.market.toBase58());
+  console.log("bondTokenVault: ", params.bondTokenVault.toBase58());
+  console.log("acccessTokenVault: ", params.accessTokenVault.toBase58());
   console.log("--------------------");
 
   const ix = await program.methods
@@ -58,7 +65,9 @@ export async function buyFirst(
     )
     .accounts({
       user: params.user,
-      userTokenAccount: params.userTokenAccount,
+      market: params.market,
+      bondTokenVault: params.bondTokenVault,
+      accessTokenVault: params.accessTokenVault,
       whirlpoolProgram: params.whirlpoolProgram,
       whirlpool: params.whirlpool,
       tokenOwnerAccountA: params.tokenOwnerAccountA,

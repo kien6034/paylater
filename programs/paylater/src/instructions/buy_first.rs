@@ -5,8 +5,7 @@ use whirlpool::program::Whirlpool as WhirlpoolProgram;
 use whirlpool::state::{ Whirlpool, TickArray };
 use whirlpool::{ self };
 
-use crate::{ state::Market };
-use crate::util::token::transfer_from_user_to_vault;
+use crate::state::Market;
 
 pub fn buy_first(
     ctx: Context<BuyFirst>,
@@ -16,14 +15,33 @@ pub fn buy_first(
     amount_specified_is_input: bool,
     a_to_b: bool
 ) -> Result<(), ProgramError> {
+    let market = &ctx.accounts.market;
+    let whirlpool = &mut ctx.accounts.whirlpool;
+    let bond_token_vault = &mut ctx.accounts.bond_token_vault;
+    let access_token_vault = &mut ctx.accounts.access_token_vault;
+
+    let mut token_owner_account_a = &mut ctx.accounts.token_owner_account_a;
+    let mut token_owner_account_b = &mut ctx.accounts.token_owner_account_b;
+
+    // TODO: validate this
+    if market.bond_token.eq(&whirlpool.token_mint_a) {
+        token_owner_account_a = &mut ctx.accounts.bond_token_vault;
+        token_owner_account_b = &mut ctx.accounts.access_token_vault;
+    } else {
+        token_owner_account_a = &mut ctx.accounts.access_token_vault;
+        token_owner_account_b = &mut ctx.accounts.bond_token_vault;
+    }
+    let token_authority = &market;
+
+    // Call nemoswap
     let cpi_program = ctx.accounts.whirlpool_program.to_account_info().clone();
     let cpi_accounts = Swap {
         token_program: ctx.accounts.token_program.to_account_info(),
-        token_authority: ctx.accounts.user.to_account_info(),
+        token_authority: token_authority.to_account_info(),
         whirlpool: ctx.accounts.whirlpool.to_account_info(),
-        token_owner_account_a: ctx.accounts.token_owner_account_a.to_account_info(),
+        token_owner_account_a: token_owner_account_a.to_account_info(),
         token_vault_a: ctx.accounts.token_vault_a.to_account_info(),
-        token_owner_account_b: ctx.accounts.token_owner_account_b.to_account_info(),
+        token_owner_account_b: token_owner_account_b.to_account_info(),
         token_vault_b: ctx.accounts.token_vault_b.to_account_info(),
         tick_array_0: ctx.accounts.tick_array_0.to_account_info(),
         tick_array_1: ctx.accounts.tick_array_1.to_account_info(),
@@ -31,7 +49,8 @@ pub fn buy_first(
         oracle: ctx.accounts.oracle.to_account_info(),
     };
 
-    let cpi_ctx = CpiContext::new(cpi_program, cpi_accounts);
+    let binding = [&market.market_seeds()[..]];
+    let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, &binding);
 
     // do cpi call
     whirlpool::cpi::swap(
@@ -51,10 +70,16 @@ pub struct BuyFirst<'info> {
     pub user: Signer<'info>,
 
     #[account(mut)]
-    pub user_token_account: Account<'info, TokenAccount>,
+    pub market: Account<'info, Market>,
 
+    #[account(mut, address=market.bond_token_vault)]
+    pub bond_token_vault: Box<Account<'info, TokenAccount>>,
+
+    #[account(mut, address=market.access_token_vault)]
+    pub access_token_vault: Box<Account<'info, TokenAccount>>,
+
+    /// nemo data
     pub whirlpool_program: Program<'info, WhirlpoolProgram>,
-
     #[account(mut)]
     pub whirlpool: Box<Account<'info, Whirlpool>>,
 

@@ -4,6 +4,7 @@ import { PDA, ProgramContext } from "../../sdk/src";
 import { env } from "../env";
 
 export * from "./wallet";
+export * from "./token";
 
 export type ProgramFixture = {
   ctx: ProgramContext;
