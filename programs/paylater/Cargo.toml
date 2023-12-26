@@ -1,0 +1,25 @@
+[package]
+name = "paylater"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "paylater"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = { git = "https://github.com/project-serum/anchor", tag = "v0.20.1", version = "0.20.1", package = "anchor-lang"}
+anchor-spl = { git = "https://github.com/project-serum/anchor", tag = "v0.20.1", version = "0.20.1", package = "anchor-spl" }
+thiserror = "1.0"
+mpl-token-metadata = { version = "=1.9.0", features = ["no-entrypoint"] }
+
+
+whirlpool = {git = "https://github.com/renec-chain/nemo-swap/", tag = "v1.0", package = "whirlpool", features=["cpi"]}

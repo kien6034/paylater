@@ -1,0 +1,34 @@
+{
+  "name": "kien-scripts",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "dependencies": {
+    "@orca-so/common-sdk": "^0.1.9",
+    "@project-serum/anchor": "~0.25.0",
+    "@solana/web3.js": "1.66.0"
+  },
+  "scripts": {
+    "build": "tsc -p src",
+    "watch": "tsc -w -p src",
+    "prepublishOnly": "yarn build",
+    "prettier-format": "prettier --config .prettierrc '**/**/*.ts' --write",
+    "test": "export TS_JEST_DISABLE_VER_CHECKER=true && npx jest --coverage",
+    "docs": "npx typedoc --options typedoc.json",
+    "ts-node": "ts-node"
+  },
+  "lint-staged": {
+    "*.{ts,md}": "yarn run prettier-format"
+  },
+  "files": [
+    "/dist"
+  ],
+  "author": "trinhtrungkientb99@gmail.com",
+  "devDependencies": {
+    "@types/bs58": "^4.0.1",
+    "@types/node": "^20.10.4",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.4"
+  }
+}
