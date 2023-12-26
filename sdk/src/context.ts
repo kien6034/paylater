@@ -4,6 +4,7 @@ import { ConfirmOptions, Connection, PublicKey } from "@solana/web3.js";
 import { Paylater } from "./artifacts/paylater";
 import PaylaterIDL from "./artifacts/paylater.json";
 import { ProgramIx } from "./ix";
+import { AccountFetcher } from "./fetcher";
 /**
  * @category Core
  */
@@ -13,6 +14,7 @@ export class ProgramContext {
   readonly opts: ConfirmOptions;
   readonly program: Program<Paylater>;
   readonly provider: AnchorProvider;
+  readonly fetcher: AccountFetcher;
   ixs: ProgramIx;
 
   public static from(
@@ -43,6 +45,7 @@ export class ProgramContext {
     // It's a hack but it works on Anchor workspace *shrug*
     this.program = program as unknown as Program<Paylater>;
     this.provider = provider;
+    this.fetcher = new AccountFetcher(provider.connection);
     this.ixs = new ProgramIx(this);
   }
 

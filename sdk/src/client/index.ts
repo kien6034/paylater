@@ -28,6 +28,8 @@ import {
   SwapInput,
   swapIx,
 } from "@renec-foundation/nemoswap-sdk/dist/instructions";
+import { AccountFetcher } from "../fetcher";
+import { MarketData } from "../types";
 
 const getTokenAccountRentExempt = async (
   connection: Connection,
@@ -83,6 +85,10 @@ export class Client {
     });
 
     return ix.toTx();
+  }
+
+  public async getMarket(): Promise<MarketData | null> {
+    return await this.ctx.fetcher.getMarket(this.pda.getMarketPDA().key);
   }
 
   public async buyFirst(

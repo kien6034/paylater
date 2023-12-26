@@ -1,19 +1,21 @@
 import { PublicKey, Connection, Keypair, Commitment } from "@solana/web3.js";
 import { AnchorProvider, Wallet } from "@project-serum/anchor";
-import {  PDA, ProgramContext } from "../../sdk/src";
+import { PDA, ProgramContext } from "../../sdk/src";
 import { env } from "../env";
 
 export * from "./wallet";
 
-export type ProgramFixture = { 
-  ctx: ProgramContext,
-  tokenMint: PublicKey,
+export type ProgramFixture = {
+  ctx: ProgramContext;
+  marketId: string;
+  bondTokenMint: PublicKey;
+  accessTokenMint: PublicKey;
 };
 
 export const getFixture = async function (
   feePayerAuthority: Keypair
 ): Promise<ProgramFixture> {
-  const commitment: Commitment = "confirmed";
+  const commitment: Commitment = "finalized";
   const connection = new Connection(env.RPC_END_POINT);
 
   const wallet = new Wallet(feePayerAuthority);
@@ -24,10 +26,13 @@ export const getFixture = async function (
     { commitment }
   );
 
-  const tokenMint = new PublicKey(env.TOKEN_MINT);
+  const bondTokenMint = new PublicKey(env.BOND_TOKEN_MINT);
+  const accessTokenMint = new PublicKey(env.ACCESS_TOKEN_MINT);
+  const marketId = env.MARKET_ID;
   return {
     ctx,
-    tokenMint,
+    marketId,
+    bondTokenMint,
+    accessTokenMint,
   };
 };
-
