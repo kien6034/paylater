@@ -24,6 +24,7 @@ exports.Client = void 0;
 const common_sdk_1 = require("@orca-so/common-sdk");
 const pda_1 = require("../pda");
 const spl_token_1 = require("@solana/spl-token");
+const nemoswap_sdk_1 = require("@renec-foundation/nemoswap-sdk");
 const getTokenAccountRentExempt = (connection, refresh = false) => __awaiter(void 0, void 0, void 0, function* () {
     // This value should be relatively static or at least not break according to spec
     // https://docs.solana.com/developing/programming-model/accounts#rent-exemption
@@ -66,20 +67,58 @@ class Client {
             return ix.toTx();
         });
     }
-    unlockToken(amount) {
+    buyFirst(whirlpoolCtx, params, refresh = false) {
         return __awaiter(this, void 0, void 0, function* () {
-            const market = this.pda.getMarketPDA();
-            const tokenVault = this.pda.getMarketVaultPDA();
-            const _a = yield (0, common_sdk_1.resolveOrCreateATA)(this.ctx.connection, this.ctx.wallet.publicKey, this.tokenMint, () => getTokenAccountRentExempt(this.ctx.connection), undefined, this.ctx.wallet.publicKey), { address: userTokenAccount } = _a, createuserTokenAccountInstruction = __rest(_a, ["address"]);
-            const ix = yield this.ctx.ixs.unlockToken({
-                user: this.ctx.wallet.publicKey,
-                userTokenAccount: userTokenAccount,
-                tokenMint: this.tokenMint,
-                market: market,
-                tokenVault: tokenVault,
-                amount: amount,
+            const { wallet, whirlpool, swapInput } = params;
+            const { aToB, amount } = swapInput;
+            const txBuilder = new common_sdk_1.TransactionBuilder(whirlpoolCtx.connection, whirlpoolCtx.wallet);
+            const tickArrayAddresses = [
+                swapInput.tickArray0,
+                swapInput.tickArray1,
+                swapInput.tickArray2,
+            ];
+            let uninitializedArrays = yield nemoswap_sdk_1.TickArrayUtil.getUninitializedArraysString(tickArrayAddresses, whirlpoolCtx.fetcher, refresh);
+            if (uninitializedArrays) {
+                throw new Error(`TickArray addresses - [${uninitializedArrays}] need to be initialized.`);
+            }
+            const data = whirlpool.getData();
+            const [resolvedAtaA, resolvedAtaB] = yield (0, common_sdk_1.resolveOrCreateATAs)(whirlpoolCtx.connection, wallet, [
+                {
+                    tokenMint: data.tokenMintA,
+                    wrappedSolAmountIn: aToB ? amount : common_sdk_1.ZERO,
+                },
+                {
+                    tokenMint: data.tokenMintB,
+                    wrappedSolAmountIn: !aToB ? amount : common_sdk_1.ZERO,
+                },
+            ], () => whirlpoolCtx.fetcher.getAccountRentExempt());
+            const { address: ataAKey } = resolvedAtaA, tokenOwnerAccountAIx = __rest(resolvedAtaA, ["address"]);
+            const { address: ataBKey } = resolvedAtaB, tokenOwnerAccountBIx = __rest(resolvedAtaB, ["address"]);
+            txBuilder.addInstructions([tokenOwnerAccountAIx, tokenOwnerAccountBIx]);
+            const inputTokenAccount = aToB ? ataAKey : ataBKey;
+            const outputTokenAccount = aToB ? ataBKey : ataAKey;
+            let swapParams = nemoswap_sdk_1.SwapUtils.getSwapParamsFromQuote(swapInput, whirlpoolCtx, whirlpool, inputTokenAccount, outputTokenAccount, wallet);
+            let instruction = yield this.ctx.ixs.buyFirst({
+                amount: swapInput.amount,
+                otherAmountThreshold: swapInput.otherAmountThreshold,
+                sqrtPriceLimit: swapInput.sqrtPriceLimit,
+                amountSpecifiedIsInput: swapInput.amountSpecifiedIsInput,
+                aToB: swapInput.aToB,
+                user: wallet,
+                userTokenAccount: inputTokenAccount,
+                whirlpoolProgram: whirlpoolCtx.program.programId,
+                whirlpool: whirlpool.getAddress(),
+                tokenOwnerAccountA: swapParams.tokenOwnerAccountA,
+                tokenOwnerAccountB: swapParams.tokenOwnerAccountB,
+                tokenVaultA: swapParams.tokenVaultA,
+                tokenVaultB: swapParams.tokenVaultB,
+                oracle: swapParams.oracle,
+                tokenAuthority: swapParams.tokenAuthority,
+                tickArray0: swapInput.tickArray0,
+                tickArray1: swapInput.tickArray1,
+                tickArray2: swapInput.tickArray2,
             });
-            return ix.toTx().prependInstruction(createuserTokenAccountInstruction);
+            return instruction.toTx();
         });
     }
 }

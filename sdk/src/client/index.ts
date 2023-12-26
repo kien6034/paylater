@@ -44,44 +44,42 @@ const getTokenAccountRentExempt = async (
 export class Client {
   ctx: ProgramContext;
   public pda: PDA;
-  public tokenMint: PublicKey;
+  public marketId: string;
+  public bondTokenMint: PublicKey;
+  public accessTokenMint: PublicKey;
 
-  constructor(ctx: ProgramContext, tokenMint: PublicKey) {
+  constructor(
+    ctx: ProgramContext,
+    marketId: string,
+    bondTokenMint: PublicKey,
+    accessTokenMint: PublicKey
+  ) {
     this.ctx = ctx;
-    this.pda = new PDA(ctx.program.programId, tokenMint);
-    this.tokenMint = tokenMint;
+    this.pda = new PDA(
+      ctx.program.programId,
+      marketId,
+      bondTokenMint,
+      accessTokenMint
+    );
+    this.bondTokenMint = bondTokenMint;
+    this.accessTokenMint = accessTokenMint;
+    this.marketId = marketId;
   }
 
   public async initMarket(signer: PublicKey): Promise<TransactionBuilder> {
     const market = this.pda.getMarketPDA();
-    const tokenVault = this.pda.getMarketVaultPDA();
+    const bondTokenVaultPDA = this.pda.getBondTokenVaultPDA();
+    const accessTokenVaultPDA = this.pda.getAccessTokenVaultPDA();
 
     const ix = await this.ctx.ixs.initializeConfig({
+      marketId: this.marketId,
       initializer: this.ctx.wallet.publicKey,
       signer: signer,
-      tokenMint: this.tokenMint,
+      bondTokenMint: this.bondTokenMint,
+      accessTokenMint: this.accessTokenMint,
+      bondTokenVault: bondTokenVaultPDA,
+      accessTokenVault: accessTokenVaultPDA,
       market: market,
-      tokenVault: tokenVault,
-    });
-
-    return ix.toTx();
-  }
-
-  public async lockToken(amount: BN): Promise<TransactionBuilder> {
-    const market = this.pda.getMarketPDA();
-    const tokenVault = this.pda.getMarketVaultPDA();
-    const userTokenAccount = await deriveATA(
-      this.ctx.wallet.publicKey,
-      this.tokenMint
-    );
-
-    const ix = await this.ctx.ixs.lockToken({
-      user: this.ctx.wallet.publicKey,
-      userTokenAccount: userTokenAccount,
-      tokenMint: this.tokenMint,
-      market: market,
-      tokenVault: tokenVault,
-      amount: amount,
     });
 
     return ix.toTx();

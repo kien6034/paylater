@@ -6,26 +6,40 @@ import { PDAInfo } from "../pda";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 export type InitializeConfigParams = {
+  marketId: string;
   initializer: PublicKey;
   signer: PublicKey;
-  tokenMint: PublicKey;
+  bondTokenMint: PublicKey;
+  accessTokenMint: PublicKey;
   market: PDAInfo;
-  tokenVault: PDAInfo;
+  bondTokenVault: PDAInfo;
+  accessTokenVault: PDAInfo;
 };
 
 export async function initializeConfig(
   program: Program<Paylater>,
   params: InitializeConfigParams
 ): Promise<Instruction> {
-  const { initializer, signer, tokenMint, market, tokenVault } = params;
+  const {
+    marketId,
+    initializer,
+    signer,
+    bondTokenMint,
+    accessTokenMint,
+    market,
+    bondTokenVault,
+    accessTokenVault,
+  } = params;
   const ix = await program.methods
-    .initialize(market.bump)
+    .initialize(marketId, market.bump)
     .accounts({
       initializer,
       signer,
-      tokenMint,
+      bondTokenMint,
+      accessTokenMint,
       market: market.key,
-      tokenVault: tokenVault.key,
+      bondTokenVault: bondTokenVault.key,
+      accessTokenVault: accessTokenVault.key,
       rent: SYSVAR_RENT_PUBKEY,
       systemProgram: SystemProgram.programId,
       tokenProgram: TOKEN_PROGRAM_ID,

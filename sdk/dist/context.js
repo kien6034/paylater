@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProgramContext = void 0;
 const anchor_1 = require("@project-serum/anchor");
-const swap_on_off_json_1 = __importDefault(require("./artifacts/swap_on_off.json"));
+const paylater_json_1 = __importDefault(require("./artifacts/paylater.json"));
 const ix_1 = require("./ix");
 /**
  * @category Core
@@ -13,7 +13,7 @@ const ix_1 = require("./ix");
 class ProgramContext {
     static from(connection, wallet, programId, opts = anchor_1.AnchorProvider.defaultOptions()) {
         const anchorProvider = new anchor_1.AnchorProvider(connection, wallet, opts);
-        const program = new anchor_1.Program(swap_on_off_json_1.default, programId, anchorProvider);
+        const program = new anchor_1.Program(paylater_json_1.default, programId, anchorProvider);
         return new ProgramContext(anchorProvider, anchorProvider.wallet, program, opts);
     }
     constructor(provider, wallet, program, opts) {

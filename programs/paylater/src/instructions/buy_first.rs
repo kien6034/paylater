@@ -5,7 +5,7 @@ use whirlpool::program::Whirlpool as WhirlpoolProgram;
 use whirlpool::state::{ Whirlpool, TickArray };
 use whirlpool::{ self };
 
-use crate::{ state::Market, MARKET_PDA_SEED, MARKET_VAULT_PDA_SEED };
+use crate::{ state::Market };
 use crate::util::token::transfer_from_user_to_vault;
 
 pub fn buy_first(

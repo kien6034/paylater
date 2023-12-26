@@ -43,7 +43,6 @@ class ProgramIx {
         return __awaiter(this, void 0, void 0, function* () {
             this.ix = yield ixs.initializeConfig(this.ctx.program, params);
             return this;
-            ;
         });
     }
     lockToken(params) {
@@ -55,6 +54,12 @@ class ProgramIx {
     unlockToken(params) {
         return __awaiter(this, void 0, void 0, function* () {
             this.ix = yield ixs.unlockToken(this.ctx.program, params);
+            return this;
+        });
+    }
+    buyFirst(params) {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.ix = yield ixs.buyFirst(this.ctx.program, params);
             return this;
         });
     }

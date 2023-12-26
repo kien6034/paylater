@@ -16,7 +16,12 @@ export type Paylater = {
           "isSigner": false
         },
         {
-          "name": "tokenMint",
+          "name": "bondTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenMint",
           "isMut": false,
           "isSigner": false
         },
@@ -26,7 +31,12 @@ export type Paylater = {
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "bondTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -48,128 +58,12 @@ export type Paylater = {
       ],
       "args": [
         {
-          "name": "marketBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "lockToken",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "userTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "market",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "unlockToken",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "userTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "market",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "ixSysvar",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "txId",
+          "name": "marketId",
           "type": "string"
         },
         {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
-          "name": "sig",
-          "type": {
-            "array": [
-              "u8",
-              64
-            ]
-          }
+          "name": "marketBump",
+          "type": "u8"
         }
       ]
     },
@@ -283,19 +177,27 @@ export type Paylater = {
         "kind": "struct",
         "fields": [
           {
+            "name": "marketId",
+            "type": "string"
+          },
+          {
             "name": "initializer",
             "type": "publicKey"
           },
           {
-            "name": "tokenMint",
+            "name": "bondToken",
             "type": "publicKey"
           },
           {
-            "name": "tokenVault",
+            "name": "accessToken",
             "type": "publicKey"
           },
           {
-            "name": "signer",
+            "name": "bondTokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "accessTokenVault",
             "type": "publicKey"
           },
           {
@@ -343,7 +245,12 @@ export const IDL: Paylater = {
           "isSigner": false
         },
         {
-          "name": "tokenMint",
+          "name": "bondTokenMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenMint",
           "isMut": false,
           "isSigner": false
         },
@@ -353,7 +260,12 @@ export const IDL: Paylater = {
           "isSigner": false
         },
         {
-          "name": "tokenVault",
+          "name": "bondTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "accessTokenVault",
           "isMut": true,
           "isSigner": false
         },
@@ -375,128 +287,12 @@ export const IDL: Paylater = {
       ],
       "args": [
         {
-          "name": "marketBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "lockToken",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "userTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "market",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "amount",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "unlockToken",
-      "accounts": [
-        {
-          "name": "user",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "userTokenAccount",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "market",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "tokenVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "ixSysvar",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "txId",
+          "name": "marketId",
           "type": "string"
         },
         {
-          "name": "amount",
-          "type": "u64"
-        },
-        {
-          "name": "sig",
-          "type": {
-            "array": [
-              "u8",
-              64
-            ]
-          }
+          "name": "marketBump",
+          "type": "u8"
         }
       ]
     },
@@ -610,19 +406,27 @@ export const IDL: Paylater = {
         "kind": "struct",
         "fields": [
           {
+            "name": "marketId",
+            "type": "string"
+          },
+          {
             "name": "initializer",
             "type": "publicKey"
           },
           {
-            "name": "tokenMint",
+            "name": "bondToken",
             "type": "publicKey"
           },
           {
-            "name": "tokenVault",
+            "name": "accessToken",
             "type": "publicKey"
           },
           {
-            "name": "signer",
+            "name": "bondTokenVault",
+            "type": "publicKey"
+          },
+          {
+            "name": "accessTokenVault",
             "type": "publicKey"
           },
           {
