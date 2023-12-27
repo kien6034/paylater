@@ -20,6 +20,7 @@ anchor-lang = { git = "https://github.com/project-serum/anchor", tag = "v0.20.1"
 anchor-spl = { git = "https://github.com/project-serum/anchor", tag = "v0.20.1", version = "0.20.1", package = "anchor-spl" }
 thiserror = "1.0"
 mpl-token-metadata = { version = "=1.9.0", features = ["no-entrypoint"] }
+serde = { version = "1.0.126", features = ["derive"] }
 
 
 whirlpool = {git = "https://github.com/renec-chain/nemo-swap/", rev = "1e0a20be73aee0a8d204f991a2dddef2a954236b", package = "whirlpool", features=["cpi"]}

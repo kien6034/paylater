@@ -15,6 +15,10 @@ pub enum ErrorCode {
     //internal error
     #[msg("Internal Error")]
     InternalError, //  0x1772
+
+    //token mismatched
+    #[msg("Token Mismatched")]
+    TokenMismatched, //  0x1773
 }
 
 impl From<TryFromIntError> for ErrorCode {

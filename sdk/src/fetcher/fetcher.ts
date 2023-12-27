@@ -3,13 +3,18 @@ import { Address, translateAddress } from "@project-serum/anchor";
 import { AccountLayout } from "@solana/spl-token";
 import invariant from "tiny-invariant";
 import {} from "../";
-import { ParsableEntity, ParsableMarket } from "./parsing";
-import { MarketData } from "../types";
+import {
+  ParsableContract,
+  ParsableEntity,
+  ParsableMarket,
+  ParsableUserInfo,
+} from "./parsing";
+import { ContractData, MarketData, UserData } from "../types";
 
 /**
  * Supported accounts
  */
-export type CachedValue = MarketData;
+export type CachedValue = MarketData | UserData | ContractData;
 
 /**
  * Include both the entity (i.e. type) of the stored value, and the value itself
@@ -67,6 +72,20 @@ export class AccountFetcher {
     refresh = false
   ): Promise<MarketData | null> {
     return this.get(translateAddress(address), ParsableMarket, refresh);
+  }
+
+  public async getUserData(
+    address: Address,
+    refresh = false
+  ): Promise<UserData | null> {
+    return this.get(translateAddress(address), ParsableUserInfo, refresh);
+  }
+
+  public async getContract(
+    address: Address,
+    refresh = false
+  ): Promise<ContractData | null> {
+    return this.get(translateAddress(address), ParsableContract, refresh);
   }
 
   /**

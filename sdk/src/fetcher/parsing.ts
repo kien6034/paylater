@@ -1,5 +1,11 @@
 import { BorshAccountsCoder } from "@project-serum/anchor";
-import { AccountName, MarketData, PROGRAM_CODER } from "../types";
+import {
+  AccountName,
+  ContractData,
+  MarketData,
+  PROGRAM_CODER,
+  UserData,
+} from "../types";
 
 /**
  * Static abstract class definition to parse entities.
@@ -27,7 +33,43 @@ export class ParsableMarket {
     try {
       return parseAnchorAccount(AccountName.Market, data);
     } catch (e) {
-      console.error(`error while parsing WhirlpoolsConfig: ${e}`);
+      console.error(`error while parsing Market Data: ${e}`);
+      return null;
+    }
+  }
+}
+
+@staticImplements<ParsableEntity<UserData>>()
+export class ParsableUserInfo {
+  private constructor() {}
+
+  public static parse(data: Buffer | undefined | null): UserData | null {
+    if (!data) {
+      return null;
+    }
+
+    try {
+      return parseAnchorAccount(AccountName.User, data);
+    } catch (e) {
+      console.error(`error while parsing User Data: ${e}`);
+      return null;
+    }
+  }
+}
+
+@staticImplements<ParsableEntity<ContractData>>()
+export class ParsableContract {
+  private constructor() {}
+
+  public static parse(data: Buffer | undefined | null): ContractData | null {
+    if (!data) {
+      return null;
+    }
+
+    try {
+      return parseAnchorAccount(AccountName.Contract, data);
+    } catch (e) {
+      console.error(`error while parsing Contract Data: ${e}`);
       return null;
     }
   }

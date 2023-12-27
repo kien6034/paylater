@@ -6,6 +6,8 @@ const IDL = PaylaterIDL as Idl;
 
 export enum AccountName {
   Market = "Market",
+  User = "User",
+  Contract = "Contract",
 }
 
 export const PROGRAM_CODER = new BorshAccountsCoder(IDL);
@@ -30,4 +32,19 @@ export type MarketData = {
   bondTokenVault: PublicKey;
   accessTokenVault: PublicKey;
   marketBump: number;
+};
+
+export type UserData = {
+  currentContractId: BN;
+};
+
+export type ContractData = {
+  contractId: BN;
+  bondTokenMint: BN;
+  accessTokenMint: BN;
+  bondAmount: BN;
+  totalBondAmount: BN;
+  totalAccessAmount: BN;
+  bondAmountPaid: BN;
+  accessAmountPaid: BN;
 };

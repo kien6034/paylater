@@ -29,7 +29,7 @@ import {
   swapIx,
 } from "@renec-foundation/nemoswap-sdk/dist/instructions";
 import { AccountFetcher } from "../fetcher";
-import { MarketData } from "../types";
+import { ContractData, MarketData, UserData } from "../types";
 
 const getTokenAccountRentExempt = async (
   connection: Connection,
@@ -44,7 +44,7 @@ const getTokenAccountRentExempt = async (
 };
 
 export class Client {
-  ctx: ProgramContext;
+  public ctx: ProgramContext;
   public pda: PDA;
   public marketId: string;
   public bondTokenMint: PublicKey;
@@ -89,6 +89,18 @@ export class Client {
 
   public async getMarket(): Promise<MarketData | null> {
     return await this.ctx.fetcher.getMarket(this.pda.getMarketPDA().key);
+  }
+
+  public async getContract(contractId: BN): Promise<ContractData | null> {
+    return await this.ctx.fetcher.getContract(
+      this.pda.getContractPDA(this.ctx.wallet.publicKey, contractId).key
+    );
+  }
+
+  public async getUserData(): Promise<UserData | null> {
+    return await this.ctx.fetcher.getUserData(
+      this.pda.getUserInfoPDA(this.ctx.wallet.publicKey).key
+    );
   }
 
   public async buyFirst(
@@ -158,8 +170,31 @@ export class Client {
       throw new Error("Market data is not found.");
     }
 
+    // Get init user info ixs if needed
+    let prependIxs: Instruction[] = [];
+    let contractId: BN;
+    const userInfoPDA = this.pda.getUserInfoPDA(wallet);
+    const user = await this.ctx.fetcher.getUserData(userInfoPDA.key, refresh);
+    if (!user) {
+      let createUserInfoIx = await this.ctx.ixs.initUserInfo({
+        user: wallet,
+        market: marketPDA.key,
+        userInfo: userInfoPDA.key,
+      });
+
+      if (createUserInfoIx && createUserInfoIx.ix) {
+        prependIxs.push(createUserInfoIx.ix);
+      }
+      contractId = new BN(1);
+    } else {
+      contractId = user.currentContractId;
+    }
+    const contractPDA = this.pda.getContractPDA(wallet, contractId);
+
     let instruction = await this.ctx.ixs.buyFirst({
       market: marketPDA.key,
+      contract: contractPDA.key,
+      userInfo: userInfoPDA.key,
       bondTokenVault: marketData.bondTokenVault,
       accessTokenVault: marketData.accessTokenVault,
       amount: swapInput.amount,
@@ -182,6 +217,6 @@ export class Client {
       tickArray2: swapInput.tickArray2,
     });
 
-    return instruction.toTx();
+    return instruction.toTx().prependInstructions(prependIxs);
   }
 }

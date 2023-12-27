@@ -68,6 +68,42 @@ export type Paylater = {
       ]
     },
     {
+      "name": "initUserInfo",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "market",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userInfo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "buyFirst",
       "accounts": [
         {
@@ -87,6 +123,16 @@ export type Paylater = {
         },
         {
           "name": "accessTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userInfo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "contract",
           "isMut": true,
           "isSigner": false
         },
@@ -174,6 +220,46 @@ export type Paylater = {
   ],
   "accounts": [
     {
+      "name": "contract",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "contractId",
+            "type": "u64"
+          },
+          {
+            "name": "bondTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "accessTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "bondAmount",
+            "type": "u64"
+          },
+          {
+            "name": "totalBondAmount",
+            "type": "u64"
+          },
+          {
+            "name": "totalAccessAmount",
+            "type": "u64"
+          },
+          {
+            "name": "bondAmountPaid",
+            "type": "u64"
+          },
+          {
+            "name": "accessAmountPaid",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "market",
       "type": {
         "kind": "struct",
@@ -213,6 +299,18 @@ export type Paylater = {
           }
         ]
       }
+    },
+    {
+      "name": "user",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentContractId",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -230,6 +328,11 @@ export type Paylater = {
       "code": 6002,
       "name": "InternalError",
       "msg": "Internal Error"
+    },
+    {
+      "code": 6003,
+      "name": "TokenMismatched",
+      "msg": "Token Mismatched"
     }
   ]
 };
@@ -304,6 +407,42 @@ export const IDL: Paylater = {
       ]
     },
     {
+      "name": "initUserInfo",
+      "accounts": [
+        {
+          "name": "user",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "market",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userInfo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "buyFirst",
       "accounts": [
         {
@@ -323,6 +462,16 @@ export const IDL: Paylater = {
         },
         {
           "name": "accessTokenVault",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "userInfo",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "contract",
           "isMut": true,
           "isSigner": false
         },
@@ -410,6 +559,46 @@ export const IDL: Paylater = {
   ],
   "accounts": [
     {
+      "name": "contract",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "contractId",
+            "type": "u64"
+          },
+          {
+            "name": "bondTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "accessTokenMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "bondAmount",
+            "type": "u64"
+          },
+          {
+            "name": "totalBondAmount",
+            "type": "u64"
+          },
+          {
+            "name": "totalAccessAmount",
+            "type": "u64"
+          },
+          {
+            "name": "bondAmountPaid",
+            "type": "u64"
+          },
+          {
+            "name": "accessAmountPaid",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "market",
       "type": {
         "kind": "struct",
@@ -449,6 +638,18 @@ export const IDL: Paylater = {
           }
         ]
       }
+    },
+    {
+      "name": "user",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "currentContractId",
+            "type": "u64"
+          }
+        ]
+      }
     }
   ],
   "errors": [
@@ -466,6 +667,11 @@ export const IDL: Paylater = {
       "code": 6002,
       "name": "InternalError",
       "msg": "Internal Error"
+    },
+    {
+      "code": 6003,
+      "name": "TokenMismatched",
+      "msg": "Token Mismatched"
     }
   ]
 };

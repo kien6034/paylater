@@ -25,7 +25,7 @@ const main = async () => {
   const userTokenAccount = await deriveATA(user.publicKey, bondTokenMint);
 
   // Fund vault
-  const hash = transferToken(
+  const hash = await transferToken(
     ctx.provider,
     userTokenAccount,
     market.bondTokenVault,

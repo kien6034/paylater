@@ -15,6 +15,11 @@ export class ProgramIx {
     return this;
   }
 
+  public async initUserInfo(params: ixs.InitUserInfoParams) {
+    this.ix = await ixs.initUserInfo(this.ctx.program, params);
+    return this;
+  }
+
   public async buyFirst(params: ixs.BuyFirst) {
     this.ix = await ixs.buyFirst(this.ctx.program, params);
     return this;

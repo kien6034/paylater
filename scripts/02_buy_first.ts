@@ -23,8 +23,25 @@ async function main() {
 
   const wallets = getWallets([ROLES.USER]);
   const userKeypair = wallets[ROLES.USER];
-
   const { ctx: whirlpoolContext } = loadProvider(userKeypair);
+
+  // Get paylater client
+  const {
+    ctx: paylaterContext,
+    marketId,
+    bondTokenMint,
+    accessTokenMint,
+  } = await getFixture(userKeypair);
+  const client = new Client(
+    paylaterContext,
+    marketId,
+    bondTokenMint,
+    accessTokenMint
+  );
+
+  console.log("user: ", userKeypair.publicKey.toString());
+
+  // GEt whirlpool client
   const nemoConfig = getConfig();
 
   if (nemoConfig.REDEX_CONFIG_PUBKEY === "") {
@@ -56,27 +73,14 @@ async function main() {
   const whirlpool = await nemoClient.getPool(whirlpoolPda.publicKey);
   const whirlpoolData = whirlpool.getData();
 
-  const quote = await swapQuoteByOutputToken(
+  const quote = await swapQuoteByInputToken(
     whirlpool,
-    whirlpoolData.tokenMintB,
+    bondTokenMint,
     new u64(100000),
     Percentage.fromFraction(1, 100),
     whirlpoolContext.program.programId,
     whirlpoolContext.fetcher,
     true
-  );
-
-  const {
-    ctx: paylaterContext,
-    marketId,
-    bondTokenMint,
-    accessTokenMint,
-  } = await getFixture(userKeypair);
-  const client = new Client(
-    paylaterContext,
-    marketId,
-    bondTokenMint,
-    accessTokenMint
   );
 
   const tx = await client.buyFirst(

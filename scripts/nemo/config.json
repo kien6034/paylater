@@ -1,7 +1,7 @@
 {
   "RPC_ENDPOINT_URL": "http://127.0.0.1:8899",
   "REDEX_PROGRAM_ID": "9c4tufJhzmfToyqFDv7hj3qnbfM7X1yQ2dUb34RQcW9r",
-  "REDEX_CONFIG_PUBKEY": "5eqn2W9MKatXPdGrc3X2AynQdZAsJ3B78cbj3pdiPnaL",
+  "REDEX_CONFIG_PUBKEY": "EyKY5xHBT5vyokTJ1KyJAMZc2a87aznsMxfBTw3g4ufw",
   "PROTOCOL_FEE_RATE": 300,
   "FEE_TIERS": [
     {
@@ -31,15 +31,15 @@
   ],
   "POOLS": [
     {
-      "TOKEN_MINT_A": "8ZpY5F8TBxjpTfzt7no3ebc63qTZAWuPqhCNWU9TfKcA",
-      "TOKEN_MINT_B": "FTFhGX7PS7JcVNgBjtFTNayUfe5jHVrsSVqBZDFivgcz",
+      "TOKEN_MINT_A": "CmSDGrYosFPy6eALXw4ZsZnyZfkm6SpTXpBjCVwee3GH",
+      "TOKEN_MINT_B": "CrGAYiZ2SabksWjeZRHRHWyW51wbhhERyAhhew5er5t4",
       "TICK_SPACING": 32,
       "OPEN_POSITION": true,
       "INIT_AMOUNT_B_PER_A": "1.0",
       "LOWER_B_PER_A_PRICE": "0.0001",
       "UPPER_B_PER_A_PRICE": "100",
       "SLIPPAGE": "1",
-      "INPUT_MINT": "FTFhGX7PS7JcVNgBjtFTNayUfe5jHVrsSVqBZDFivgcz",
+      "INPUT_MINT": "CmSDGrYosFPy6eALXw4ZsZnyZfkm6SpTXpBjCVwee3GH",
       "INPUT_AMOUNT": "1000000"
     }
   ]

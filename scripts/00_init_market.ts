@@ -19,6 +19,7 @@ const main = async () => {
     const hash = await tx.buildAndExecute();
     console.log("hash: ", hash);
   } catch (error) {
+    console.log("error: ", error);
     console.log("MARKET INITIALIZED");
   }
 

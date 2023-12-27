@@ -9,7 +9,7 @@ pub fn initialize(
 ) -> Result<(), ProgramError> {
     let market = &mut ctx.accounts.market;
 
-    market.marketId = market_id;
+    market.market_id = market_id;
     market.initializer = *ctx.accounts.initializer.key;
     market.bond_token = *ctx.accounts.bond_token_mint.to_account_info().key;
     market.access_token = *ctx.accounts.access_token_mint.to_account_info().key;

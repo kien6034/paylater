@@ -1,16 +1,14 @@
-use std::fmt::Error;
-
 use anchor_lang::prelude::*;
-use anchor_spl::token::{ Mint, TokenAccount };
+use anchor_spl::token::TokenAccount;
 use whirlpool::cpi::accounts::Swap;
 use whirlpool::program::Whirlpool as WhirlpoolProgram;
 use whirlpool::state::{ Whirlpool, TickArray };
-use whirlpool::util::SwapTickSequence;
-use whirlpool::manager::swap_manager::swap;
+
 use whirlpool::{ self };
 
+use crate::{ CONTRACT, USER_INFO };
 use crate::errors::ErrorCode;
-use crate::state::Market;
+use crate::state::{ Market, User, Contract };
 
 pub fn buy_first(
     ctx: Context<BuyFirst>,
@@ -19,48 +17,68 @@ pub fn buy_first(
     sqrt_price_limit: u128
 ) -> Result<(), ProgramError> {
     let market = &ctx.accounts.market;
-    let whirlpool = &mut ctx.accounts.whirlpool;
+    let whirlpool = &ctx.accounts.whirlpool;
+    let contract = &mut ctx.accounts.contract;
+    let user_info = &mut ctx.accounts.user_info;
 
-    let mut token_owner_account_a = &mut ctx.accounts.token_owner_account_a;
-    let mut token_owner_account_b = &mut ctx.accounts.token_owner_account_b;
+    let token_owner_account_a;
+    let token_owner_account_b;
 
     // TODO: validate this
     // Swap bond -> access
     let a_to_b;
     let amount_specified_is_input = true;
     if market.bond_token.eq(&whirlpool.token_mint_a) {
-        token_owner_account_a = &mut ctx.accounts.bond_token_vault;
-        token_owner_account_b = &mut ctx.accounts.access_token_vault;
+        token_owner_account_a = ctx.accounts.bond_token_vault.clone();
+        token_owner_account_b = ctx.accounts.access_token_vault.clone();
 
         a_to_b = true; // bond is token a -> a->b
-    } else {
-        token_owner_account_a = &mut ctx.accounts.access_token_vault;
-        token_owner_account_b = &mut ctx.accounts.bond_token_vault;
+    } else if market.bond_token.eq(&whirlpool.token_mint_b) {
+        token_owner_account_a = ctx.accounts.access_token_vault.clone();
+        token_owner_account_b = ctx.accounts.bond_token_vault.clone();
 
         a_to_b = false; // bond is token b -> b->a
+    } else {
+        return Err(ErrorCode::TokenMismatched.into());
     }
+
     let token_authority = &market;
 
-    // Get swap update
-    let clock = Clock::get()?;
-    let timestamp = to_timestamp_u64(clock.unix_timestamp)?;
-    let mut swap_tick_sequence = SwapTickSequence::new(
-        ctx.accounts.tick_array_0.load_mut().unwrap(),
-        ctx.accounts.tick_array_1.load_mut().ok(),
-        ctx.accounts.tick_array_2.load_mut().ok()
-    );
+    // update user info current contract id
+    user_info.current_contract_id += 1;
 
-    let swap_update = swap(
-        &whirlpool,
-        &mut swap_tick_sequence,
+    // TODO: cannot use orcal swap function to calculate this, since it will change the state
+    // Record swap info into contract
+    // let clock = Clock::get()?;
+    // let timestamp = to_timestamp_u64(clock.unix_timestamp)?;
+
+    // let tick_array_0 = ctx.accounts.tick_array_0.clone();
+    // let tick_array_1 = ctx.accounts.tick_array_1.clone();
+    // let tick_array_2 = ctx.accounts.tick_array_2.clone();
+    // let mut swap_tick_sequence = SwapTickSequence::new(
+    //     tick_array_0.load_mut().unwrap(),
+    //     tick_array_1.load_mut().ok(),
+    //     tick_array_2.load_mut().ok()
+    // );
+
+    // let swap_update = swap(
+    //     &whirlpool,
+    //     &mut swap_tick_sequence,
+    //     amount,
+    //     sqrt_price_limit,
+    //     amount_specified_is_input,
+    //     a_to_b,
+    //     timestamp
+    // )?;
+    // msg!("swap_update: {:?}", swap_update);
+
+    contract.initialize(
+        user_info.current_contract_id,
+        market.bond_token,
+        market.access_token,
         amount,
-        sqrt_price_limit,
-        amount_specified_is_input,
-        a_to_b,
-        timestamp
+        other_amount_threshold
     )?;
-
-    // Record swap info
 
     // Call nemoswap
     let cpi_program = ctx.accounts.whirlpool_program.to_account_info().clone();
@@ -82,6 +100,7 @@ pub fn buy_first(
     let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, &binding);
 
     // do cpi call
+    msg!("Calling swap");
     whirlpool::cpi::swap(
         cpi_ctx,
         amount,
@@ -89,7 +108,9 @@ pub fn buy_first(
         sqrt_price_limit,
         amount_specified_is_input,
         a_to_b
-    );
+    )?;
+    msg!("Finish swap");
+
     Ok(())
 }
 
@@ -106,6 +127,27 @@ pub struct BuyFirst<'info> {
 
     #[account(mut, address=market.access_token_vault)]
     pub access_token_vault: Box<Account<'info, TokenAccount>>,
+
+    // Init contract
+    #[account(
+        mut,
+        seeds = [USER_INFO.as_ref(), market.market_id.as_ref(), user.key.as_ref()], bump,
+    )]
+    pub user_info: Account<'info, User>,
+
+    #[account(
+        init,
+        payer = user,
+        space = Contract::LEN,
+        seeds = [
+            CONTRACT.as_ref(),
+            market.market_id.as_ref(),
+            user.key.as_ref(),
+            user_info.current_contract_id.to_le_bytes().as_ref(),
+        ],
+        bump
+    )]
+    pub contract: Account<'info, Contract>,
 
     /// nemo data
     pub whirlpool_program: Program<'info, WhirlpoolProgram>,
