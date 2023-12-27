@@ -219,4 +219,47 @@ export class Client {
 
     return instruction.toTx().prependInstructions(prependIxs);
   }
+
+  public async claim(
+    contractId: BN,
+    claimAmount: BN
+  ): Promise<TransactionBuilder> {
+    let market = await this.getMarket();
+    if (!market) {
+      throw new Error("Market data is not found.");
+    }
+
+    const userBondTokenAccount = await deriveATA(
+      this.ctx.wallet.publicKey,
+      this.bondTokenMint
+    );
+
+    const {
+      address: userAccessTokenAccount,
+      ...createuserAccessTokenAccountInstruction
+    } = await resolveOrCreateATA(
+      this.ctx.connection,
+      this.ctx.wallet.publicKey,
+      this.accessTokenMint,
+      () => getTokenAccountRentExempt(this.ctx.connection),
+      undefined,
+      this.ctx.wallet.publicKey
+    );
+
+    const ix = await this.ctx.ixs.claim({
+      user: this.ctx.wallet.publicKey,
+      amount: claimAmount,
+      market: this.pda.getMarketPDA().key,
+      contract: this.pda.getContractPDA(this.ctx.wallet.publicKey, contractId)
+        .key,
+      bondTokenVault: market.bondTokenVault,
+      accessTokenVault: market.accessTokenVault,
+      userBondTokenAccount,
+      userAccessTokenAccount,
+    });
+
+    return ix
+      .toTx()
+      .prependInstructions([createuserAccessTokenAccountInstruction]);
+  }
 }

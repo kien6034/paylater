@@ -22,13 +22,30 @@ const main = async () => {
     console.log("no user info");
     return;
   }
-  console.log(userInfo.currentContractId.toString());
 
   console.log("\n Getting contract data");
-  const contract = await client.getContract(
-    userInfo.currentContractId.sub(new BN(1))
+
+  let contractId;
+  if (process.argv[2]) {
+    contractId = new BN(process.argv[2]);
+  } else {
+    contractId = userInfo.currentContractId.sub(new BN(1));
+  }
+  const contract = await client.getContract(contractId);
+
+  if (!contract) {
+    console.log("no contract");
+    return;
+  }
+  console.log("\n ---Contract info");
+  console.log("contract id: ", contract.contractId.toString());
+  console.log("total bond amount: ", contract.totalBondAmount.toString());
+  console.log(
+    "total access token amount: ",
+    contract.totalAccessAmount.toString()
   );
-  console.log(contract);
+  console.log("bond amount paid: ", contract.bondAmountPaid.toString());
+  console.log("access amount paid: ", contract.accessAmountPaid.toString());
 };
 
 main().catch((error) => console.log(error));

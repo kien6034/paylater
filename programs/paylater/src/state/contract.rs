@@ -1,18 +1,15 @@
 use anchor_lang::prelude::*;
 
-use super::Market;
-use whirlpool::manager::swap_manager::PostSwapUpdate;
-
 #[account]
 pub struct Contract {
-    contract_id: u64,
-    bond_token_mint: Pubkey,
-    access_token_mint: Pubkey,
-    bond_amount: u64,
-    total_bond_amount: u64,
-    total_access_amount: u64,
-    bond_amount_paid: u64,
-    access_amount_paid: u64,
+    pub contract_id: u64,
+    pub bond_token_mint: Pubkey,
+    pub access_token_mint: Pubkey,
+    pub bond_amount: u64,
+    pub total_bond_amount: u64,
+    pub total_access_amount: u64,
+    pub bond_amount_paid: u64,
+    pub access_amount_paid: u64,
 }
 
 impl Contract {

@@ -39,4 +39,8 @@ pub mod paylater {
     ) -> Result<(), ProgramError> {
         instructions::buy_first::buy_first(ctx, amount, other_amount_threshold, sqrt_price_limit)
     }
+
+    pub fn claim(ctx: Context<Claim>, amount: u64) -> Result<(), ProgramError> {
+        instructions::claim::claim(ctx, amount)
+    }
 }

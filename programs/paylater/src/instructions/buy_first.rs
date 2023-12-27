@@ -44,9 +44,6 @@ pub fn buy_first(
 
     let token_authority = &market;
 
-    // update user info current contract id
-    user_info.current_contract_id += 1;
-
     // TODO: cannot use orcal swap function to calculate this, since it will change the state
     // Record swap info into contract
     // let clock = Clock::get()?;
@@ -79,6 +76,9 @@ pub fn buy_first(
         amount,
         other_amount_threshold
     )?;
+
+    // update user info current contract id
+    user_info.current_contract_id += 1;
 
     // Call nemoswap
     let cpi_program = ctx.accounts.whirlpool_program.to_account_info().clone();

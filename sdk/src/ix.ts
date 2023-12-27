@@ -25,6 +25,11 @@ export class ProgramIx {
     return this;
   }
 
+  public async claim(params: ixs.ClaimParams) {
+    this.ix = await ixs.claim(this.ctx.program, params);
+    return this;
+  }
+
   public toTx(): TransactionBuilder {
     const tx = new TransactionBuilder(
       this.ctx.provider.connection,

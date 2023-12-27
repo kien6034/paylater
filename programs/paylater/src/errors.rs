@@ -19,6 +19,10 @@ pub enum ErrorCode {
     //token mismatched
     #[msg("Token Mismatched")]
     TokenMismatched, //  0x1773
+
+    //token claim exceed
+    #[msg("Token Claim Exceed")]
+    TokenClaimExceed, //  0x1774
 }
 
 impl From<TryFromIntError> for ErrorCode {

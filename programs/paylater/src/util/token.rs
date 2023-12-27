@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{ self, InitializeAccount, Token, Transfer };
+use anchor_spl::token::{ self, InitializeAccount, Transfer };
 
 pub fn transfer_from_user_to_vault<'info>(
     owner_authority: &Signer<'info>,
@@ -19,7 +19,7 @@ pub fn transfer_from_user_to_vault<'info>(
 }
 
 pub fn transfer_from_vault_to_user<'info>(
-    authority: AccountInfo<'info>,
+    authority: &AccountInfo<'info>,
     token_vault: &AccountInfo<'info>,
     user_token_account: &AccountInfo<'info>,
     token_program: &AccountInfo<'info>,
